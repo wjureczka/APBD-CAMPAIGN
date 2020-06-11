@@ -30,8 +30,6 @@ namespace APBD_CAMPAIGN.Models
         [MaxLength(100)]
         public string Password { get; set; }
 
-        public string AccessToken { get; set; }
-
         public string RefreshToken { get; set; }
     }
 }

@@ -108,9 +108,19 @@ namespace APBD_CAMPAIGN.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest loginRequest)
         {
-            var client = await _advertCampaignContext.Client
-                .Where(entity => entity.Login.Equals(loginRequest.Login) && entity.Password.Equals(loginRequest.Password))
-                .FirstAsync();
+            Client client = null;
+
+            try
+            {
+                client = await _advertCampaignContext.Client
+                    .Where(entity => entity.Login.Equals(loginRequest.Login) && entity.Password.Equals(loginRequest.Password))
+                    .FirstAsync();
+
+            } catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+                return BadRequest();
+            }
 
             var claims = new[]
             {
@@ -119,7 +129,7 @@ namespace APBD_CAMPAIGN.Controllers
                 new Claim(ClaimTypes.Role, "client")
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT_BEARER"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT_SECRET"]));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken
@@ -133,15 +143,13 @@ namespace APBD_CAMPAIGN.Controllers
 
             var refreshToken = Guid.NewGuid();
 
-            client.AccessToken = token.ToString();
             client.RefreshToken = refreshToken.ToString();
-
-            this._advertCampaignContext.Client.Update(client);
-            await this._advertCampaignContext.SaveChangesAsync();
+            _advertCampaignContext.Client.Update(client);
+            await _advertCampaignContext.SaveChangesAsync();
 
             return Ok(new LoginResponse
             {
-                AccessToken = client.AccessToken,
+                AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
                 RefreshToken = client.RefreshToken
             });
         }
