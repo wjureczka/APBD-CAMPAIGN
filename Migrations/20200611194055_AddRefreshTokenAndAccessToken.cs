@@ -3,14 +3,18 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace APBD_CAMPAIGN.Migrations
 {
-    public partial class AddPasswordToClient : Migration
+    public partial class AddRefreshTokenAndAccessToken : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "Password",
+                name: "AccessToken",
                 table: "Client",
-                maxLength: 100,
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "RefreshToken",
+                table: "Client",
                 nullable: true);
 
             migrationBuilder.UpdateData(
@@ -18,13 +22,17 @@ namespace APBD_CAMPAIGN.Migrations
                 keyColumn: "IdCampaign",
                 keyValue: 1,
                 columns: new[] { "EndDate", "StartDate" },
-                values: new object[] { new DateTime(2020, 6, 11, 15, 29, 31, 194, DateTimeKind.Local).AddTicks(8125), new DateTime(2020, 6, 11, 15, 29, 31, 187, DateTimeKind.Local).AddTicks(5113) });
+                values: new object[] { new DateTime(2020, 6, 11, 21, 40, 54, 720, DateTimeKind.Local).AddTicks(6358), new DateTime(2020, 6, 11, 21, 40, 54, 714, DateTimeKind.Local).AddTicks(7248) });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Password",
+                name: "AccessToken",
+                table: "Client");
+
+            migrationBuilder.DropColumn(
+                name: "RefreshToken",
                 table: "Client");
 
             migrationBuilder.UpdateData(
@@ -32,7 +40,7 @@ namespace APBD_CAMPAIGN.Migrations
                 keyColumn: "IdCampaign",
                 keyValue: 1,
                 columns: new[] { "EndDate", "StartDate" },
-                values: new object[] { new DateTime(2020, 6, 11, 14, 50, 2, 225, DateTimeKind.Local).AddTicks(1935), new DateTime(2020, 6, 11, 14, 50, 2, 217, DateTimeKind.Local).AddTicks(7312) });
+                values: new object[] { new DateTime(2020, 6, 11, 20, 13, 14, 198, DateTimeKind.Local).AddTicks(4840), new DateTime(2020, 6, 11, 20, 13, 14, 191, DateTimeKind.Local).AddTicks(6410) });
         }
     }
 }

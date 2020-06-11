@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APBD_CAMPAIGN.Migrations
 {
     [DbContext(typeof(AdvertCampaignContext))]
-    [Migration("20200611132931_AddPasswordToClient")]
-    partial class AddPasswordToClient
+    [Migration("20200611181314_Recreate")]
+    partial class Recreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -105,8 +105,14 @@ namespace APBD_CAMPAIGN.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("ClientEmail")
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<int?>("ClientIdClient")
                         .HasColumnType("int");
+
+                    b.Property<string>("ClientLogin")
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
@@ -134,11 +140,11 @@ namespace APBD_CAMPAIGN.Migrations
 
                     b.HasKey("IdCampaign");
 
-                    b.HasIndex("ClientIdClient");
-
                     b.HasIndex("FromBuildingIdBuilding");
 
                     b.HasIndex("ToBuildingIdBuilding");
+
+                    b.HasIndex("ClientIdClient", "ClientLogin", "ClientEmail");
 
                     b.ToTable("Campaign");
 
@@ -146,11 +152,11 @@ namespace APBD_CAMPAIGN.Migrations
                         new
                         {
                             IdCampaign = 1,
-                            EndDate = new DateTime(2020, 6, 11, 15, 29, 31, 194, DateTimeKind.Local).AddTicks(8125),
+                            EndDate = new DateTime(2020, 6, 11, 20, 13, 14, 198, DateTimeKind.Local).AddTicks(4840),
                             FromIdBuilding = 1,
                             IdClient = 1,
                             PricePerSquareMeter = 50m,
-                            StartDate = new DateTime(2020, 6, 11, 15, 29, 31, 187, DateTimeKind.Local).AddTicks(5113),
+                            StartDate = new DateTime(2020, 6, 11, 20, 13, 14, 191, DateTimeKind.Local).AddTicks(6410),
                             ToIdBuilding = 2
                         });
                 });
@@ -158,9 +164,11 @@ namespace APBD_CAMPAIGN.Migrations
             modelBuilder.Entity("APBD_CAMPAIGN.Models.Client", b =>
                 {
                     b.Property<int>("IdClient")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    b.Property<string>("Login")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(100)")
@@ -174,10 +182,6 @@ namespace APBD_CAMPAIGN.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
-                    b.Property<string>("Login")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
@@ -186,7 +190,7 @@ namespace APBD_CAMPAIGN.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
-                    b.HasKey("IdClient");
+                    b.HasKey("IdClient", "Login", "Email");
 
                     b.ToTable("Client");
 
@@ -194,10 +198,12 @@ namespace APBD_CAMPAIGN.Migrations
                         new
                         {
                             IdClient = 1,
+                            Login = "klient1_login",
                             Email = "klient1@klient.pl",
                             FirstName = "Klient1",
                             LastName = "Klient2",
-                            Login = "klient1_login"
+                            Password = "klient1_password",
+                            Phone = "123123123"
                         });
                 });
 
@@ -210,10 +216,6 @@ namespace APBD_CAMPAIGN.Migrations
 
             modelBuilder.Entity("APBD_CAMPAIGN.Models.Campaign", b =>
                 {
-                    b.HasOne("APBD_CAMPAIGN.Models.Client", "Client")
-                        .WithMany()
-                        .HasForeignKey("ClientIdClient");
-
                     b.HasOne("APBD_CAMPAIGN.Models.Building", "FromBuilding")
                         .WithMany()
                         .HasForeignKey("FromBuildingIdBuilding");
@@ -221,6 +223,10 @@ namespace APBD_CAMPAIGN.Migrations
                     b.HasOne("APBD_CAMPAIGN.Models.Building", "ToBuilding")
                         .WithMany()
                         .HasForeignKey("ToBuildingIdBuilding");
+
+                    b.HasOne("APBD_CAMPAIGN.Models.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientIdClient", "ClientLogin", "ClientEmail");
                 });
 #pragma warning restore 612, 618
         }

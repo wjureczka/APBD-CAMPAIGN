@@ -52,6 +52,13 @@ namespace APBD_CAMPAIGN.DAL
 
             modelBuilder.Entity<Client>(entity =>
             {
+                entity.HasKey(entity => new
+                {
+                    entity.IdClient,
+                    entity.Login,
+                    entity.Email
+                });
+
                 entity.HasData(new Client
                 {
                     IdClient = 1,
