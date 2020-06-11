@@ -12,6 +12,11 @@ namespace APBD_CAMPAIGN.DAL
 
         }
 
+        public AdvertCampaignContext(DbContextOptions<AdvertCampaignContext> options) : base(options)
+        {
+
+        }
+
         public DbSet<Banner> Banners;
 
         public DbSet<Building> Buildings;

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace APBD_CAMPAIGN.Models
 {
@@ -15,6 +13,7 @@ namespace APBD_CAMPAIGN.Models
 
         public DateTime EndDate { get; set; }
 
+        [Column(TypeName = "decimal(6, 2)")]
         public decimal PricePerSquareMeter { get; set; }
 
         public int IdClient { get; set; }
