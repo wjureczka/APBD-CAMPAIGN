@@ -33,7 +33,7 @@ namespace APBD_CAMPAIGN.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var client = await _advertCampaignContext.Client.Where(entity => entity.IdClient.Equals(id)).FirstAsync();
+            var client = await _advertCampaignContext.Client.FindAsync(id);
 
             return Ok(client);
         }
@@ -50,17 +50,44 @@ namespace APBD_CAMPAIGN.Controllers
                 Password = createUserRequest.Password
             });
 
+
+            await _advertCampaignContext.SaveChangesAsync();
+
             return CreatedAtAction("client", client);
         }
 
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<IActionResult> Put(UpdateUserRequest updateUserRequest)
         {
+            var client = await _advertCampaignContext.Client.FindAsync(updateUserRequest.IdClient);
+
+            if(client == null)
+            {
+                return NotFound();
+            }
+
+            client.FirstName = updateUserRequest.FirstName;
+            client.LastName = updateUserRequest.LastName;
+            client.Email = updateUserRequest.Email;
+            client.Login = updateUserRequest.Login;
+            client.Password = updateUserRequest.Password;
+            client.Phone = updateUserRequest.Phone;
+
+            _advertCampaignContext.Client.Update(client);
+
+            await _advertCampaignContext.SaveChangesAsync();
+
+            return Ok(client);
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
+            _advertCampaignContext.Client.Remove(new Client { IdClient = id });
+
+            await _advertCampaignContext.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }
