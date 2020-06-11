@@ -52,6 +52,9 @@ namespace APBD_CAMPAIGN
             {
                 endpoints.MapControllers();
             });
+
+            app.UseSwagger();
+            app.UseSwaggerUI();
         }
     }
 }
