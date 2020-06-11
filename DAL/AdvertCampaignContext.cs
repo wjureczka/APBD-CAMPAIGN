@@ -17,13 +17,13 @@ namespace APBD_CAMPAIGN.DAL
 
         }
 
-        public DbSet<Banner> Banners;
+        public DbSet<Banner> Banner { get; set; }
 
-        public DbSet<Building> Buildings;
+        public DbSet<Building> Building { get; set; }
 
-        public DbSet<Campaign> Campaigns;
+        public DbSet<Campaign> Campaign { get; set; }
 
-        public DbSet<Client> Clients;
+        public DbSet<Client> Client { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -57,8 +57,10 @@ namespace APBD_CAMPAIGN.DAL
                     IdClient = 1,
                     FirstName = "Klient1",
                     LastName = "Klient2",
+                    Phone = "123123123",
                     Email = "klient1@klient.pl",
-                    Login = "klient1_login"
+                    Login = "klient1_login",
+                    Password = "klient1_password"
                 });
             });
 

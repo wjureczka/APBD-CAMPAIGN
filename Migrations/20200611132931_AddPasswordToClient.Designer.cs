@@ -4,14 +4,16 @@ using APBD_CAMPAIGN.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace APBD_CAMPAIGN.Migrations
 {
     [DbContext(typeof(AdvertCampaignContext))]
-    partial class AdvertCampaignContextModelSnapshot : ModelSnapshot
+    [Migration("20200611132931_AddPasswordToClient")]
+    partial class AddPasswordToClient
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -144,11 +146,11 @@ namespace APBD_CAMPAIGN.Migrations
                         new
                         {
                             IdCampaign = 1,
-                            EndDate = new DateTime(2020, 6, 11, 15, 31, 10, 687, DateTimeKind.Local).AddTicks(1501),
+                            EndDate = new DateTime(2020, 6, 11, 15, 29, 31, 194, DateTimeKind.Local).AddTicks(8125),
                             FromIdBuilding = 1,
                             IdClient = 1,
                             PricePerSquareMeter = 50m,
-                            StartDate = new DateTime(2020, 6, 11, 15, 31, 10, 680, DateTimeKind.Local).AddTicks(3942),
+                            StartDate = new DateTime(2020, 6, 11, 15, 29, 31, 187, DateTimeKind.Local).AddTicks(5113),
                             ToIdBuilding = 2
                         });
                 });
@@ -195,8 +197,7 @@ namespace APBD_CAMPAIGN.Migrations
                             Email = "klient1@klient.pl",
                             FirstName = "Klient1",
                             LastName = "Klient2",
-                            Login = "klient1_login",
-                            Password = "klient1_password"
+                            Login = "klient1_login"
                         });
                 });
 
