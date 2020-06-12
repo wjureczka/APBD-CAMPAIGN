@@ -1,17 +1,13 @@
 ﻿using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using APBD_CAMPAIGN.DAL;
 using APBD_CAMPAIGN.DTO.Requests;
 using APBD_CAMPAIGN.DTO.Responses;
 using APBD_CAMPAIGN.Models;
+using APBD_CAMPAIGN.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 
 namespace APBD_CAMPAIGN.Controllers
 {
@@ -21,12 +17,12 @@ namespace APBD_CAMPAIGN.Controllers
     {
         private AdvertCampaignContext _advertCampaignContext;
 
-        private IConfiguration _configuration { get; set; }
+        private IAuthService _authService;
 
-        public ClientsController(AdvertCampaignContext advertCampaign, IConfiguration configuration)
+        public ClientsController(AdvertCampaignContext advertCampaignContext, IAuthService authService)
         {
-            _advertCampaignContext = advertCampaign;
-            _configuration = configuration;
+            _advertCampaignContext = advertCampaignContext;
+            _authService = authService;
         }
 
         [HttpGet]
@@ -105,6 +101,36 @@ namespace APBD_CAMPAIGN.Controllers
             return NoContent();
         }
 
+        [HttpPost("refresh")]
+        public async Task<IActionResult> ValidateRefreshToken(RefreshTokenRequest refreshTokenRequest)
+        {
+            Client client;
+
+            try
+            {
+                client = await _advertCampaignContext.Client
+                    .Where(entity => entity.RefreshToken.Equals(refreshTokenRequest.RefreshToken))
+                    .FirstAsync();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+                return BadRequest();
+            }
+
+            var tokens = _authService.GenerateTokens();
+
+            client.RefreshToken = tokens.RefreshToken;
+            _advertCampaignContext.Client.Update(client);
+            await _advertCampaignContext.SaveChangesAsync();
+
+            return Ok(new RefreshTokenResponse
+            {
+                AccessToken = tokens.AccessToken,
+                RefreshToken = client.RefreshToken
+            });
+        }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest loginRequest)
         {
@@ -122,34 +148,15 @@ namespace APBD_CAMPAIGN.Controllers
                 return BadRequest();
             }
 
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, "1"),
-                new Claim(ClaimTypes.Name, "client"),
-                new Claim(ClaimTypes.Role, "client")
-            };
+            var tokens = _authService.GenerateTokens();
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT_SECRET"]));
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken
-            (
-                issuer: "DODATKOWY_PROJEKT_ISSUER",
-                audience: "DODATKOWY_PROJEKT_AUDIENCE",
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(5),
-                signingCredentials: credentials
-            );
-
-            var refreshToken = Guid.NewGuid();
-
-            client.RefreshToken = refreshToken.ToString();
+            client.RefreshToken = tokens.RefreshToken;
             _advertCampaignContext.Client.Update(client);
             await _advertCampaignContext.SaveChangesAsync();
 
             return Ok(new LoginResponse
             {
-                AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
+                AccessToken = tokens.AccessToken,
                 RefreshToken = client.RefreshToken
             });
         }

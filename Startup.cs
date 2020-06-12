@@ -9,6 +9,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using APBD_CAMPAIGN.Services;
 
 namespace APBD_CAMPAIGN
 {
@@ -24,7 +25,8 @@ namespace APBD_CAMPAIGN
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -38,11 +40,13 @@ namespace APBD_CAMPAIGN
                     };
                 });
 
-            services.AddControllers();
+            services.AddSingleton<IAuthService, AuthService>();
 
             services.AddDbContext<AdvertCampaignContext>((options) => {
                 options.UseSqlServer("Data Source=db-mssql;Initial Catalog=s17082;Integrated Security=True");
             });
+
+            services.AddControllers();
 
             services.AddSwaggerGen(c =>
             {

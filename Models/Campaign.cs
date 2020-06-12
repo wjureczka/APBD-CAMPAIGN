@@ -16,16 +16,10 @@ namespace APBD_CAMPAIGN.Models
         [Column(TypeName = "decimal(6, 2)")]
         public decimal PricePerSquareMeter { get; set; }
 
-        public int IdClient { get; set; }
+        public Client Client { get; set; }
 
-        public virtual Client Client { get; set; }
+        public Building FromIdBuilding { get; set; }
 
-        public int FromIdBuilding { get; set; }
-
-        public virtual Building FromBuilding { get; set; }
-
-        public int ToIdBuilding { get; set; }
-
-        public virtual Building ToBuilding { get; set; }
+        public Building ToIdBuilding { get; set; }
     }
 }
