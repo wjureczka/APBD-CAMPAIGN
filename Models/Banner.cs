@@ -18,7 +18,7 @@ namespace APBD_CAMPAIGN.Models
         public decimal Area { get; set; }
 
         public int IdCampaign { get; set; }
-
-        public virtual Campaign Campaign { get; set; }
+        [ForeignKey("IdCampaign")]
+        public Campaign Campaign { get; set; }
     }
 }

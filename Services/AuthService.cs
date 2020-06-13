@@ -34,7 +34,7 @@ namespace APBD_CAMPAIGN.Services
                issuer: "DODATKOWY_PROJEKT_ISSUER",
                audience: "DODATKOWY_PROJEKT_AUDIENCE",
                claims: claims,
-               expires: DateTime.Now.AddMinutes(5),
+               expires: DateTime.Now.AddMinutes(60),
                signingCredentials: credentials
            );
 

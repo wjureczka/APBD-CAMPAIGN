@@ -145,7 +145,7 @@ namespace APBD_CAMPAIGN.Controllers
             } catch (Exception exception)
             {
                 Console.WriteLine(exception);
-                return BadRequest();
+                return Unauthorized();
             }
 
             var tokens = _authService.GenerateTokens();

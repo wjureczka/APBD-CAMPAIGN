@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace APBD_CAMPAIGN.Migrations
 {
-    public partial class Recreate : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -26,17 +26,19 @@ namespace APBD_CAMPAIGN.Migrations
                 name: "Client",
                 columns: table => new
                 {
-                    IdClient = table.Column<int>(nullable: false),
-                    Email = table.Column<string>(maxLength: 100, nullable: false),
-                    Login = table.Column<string>(maxLength: 100, nullable: false),
+                    IdClient = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     FirstName = table.Column<string>(maxLength: 100, nullable: true),
                     LastName = table.Column<string>(maxLength: 100, nullable: true),
+                    Email = table.Column<string>(maxLength: 100, nullable: true),
                     Phone = table.Column<string>(maxLength: 100, nullable: true),
-                    Password = table.Column<string>(maxLength: 100, nullable: true)
+                    Login = table.Column<string>(maxLength: 100, nullable: true),
+                    Password = table.Column<string>(maxLength: 100, nullable: true),
+                    RefreshToken = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Client", x => new { x.IdClient, x.Login, x.Email });
+                    table.PrimaryKey("PK_Client", x => x.IdClient);
                 });
 
             migrationBuilder.CreateTable(
@@ -49,34 +51,29 @@ namespace APBD_CAMPAIGN.Migrations
                     EndDate = table.Column<DateTime>(nullable: false),
                     PricePerSquareMeter = table.Column<decimal>(type: "decimal(6, 2)", nullable: false),
                     IdClient = table.Column<int>(nullable: false),
-                    ClientIdClient = table.Column<int>(nullable: true),
-                    ClientLogin = table.Column<string>(nullable: true),
-                    ClientEmail = table.Column<string>(nullable: true),
                     FromIdBuilding = table.Column<int>(nullable: false),
-                    FromBuildingIdBuilding = table.Column<int>(nullable: true),
-                    ToIdBuilding = table.Column<int>(nullable: false),
-                    ToBuildingIdBuilding = table.Column<int>(nullable: true)
+                    ToIdBuilding = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Campaign", x => x.IdCampaign);
                     table.ForeignKey(
-                        name: "FK_Campaign_Building_FromBuildingIdBuilding",
-                        column: x => x.FromBuildingIdBuilding,
+                        name: "FK_Campaign_Building_FromIdBuilding",
+                        column: x => x.FromIdBuilding,
                         principalTable: "Building",
                         principalColumn: "IdBuilding",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Campaign_Building_ToBuildingIdBuilding",
-                        column: x => x.ToBuildingIdBuilding,
-                        principalTable: "Building",
-                        principalColumn: "IdBuilding",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Campaign_Client_ClientIdClient_ClientLogin_ClientEmail",
-                        columns: x => new { x.ClientIdClient, x.ClientLogin, x.ClientEmail },
+                        name: "FK_Campaign_Client_IdClient",
+                        column: x => x.IdClient,
                         principalTable: "Client",
-                        principalColumns: new[] { "IdClient", "Login", "Email" },
+                        principalColumn: "IdClient",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Campaign_Building_ToIdBuilding",
+                        column: x => x.ToIdBuilding,
+                        principalTable: "Building",
+                        principalColumn: "IdBuilding",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -89,63 +86,77 @@ namespace APBD_CAMPAIGN.Migrations
                     Name = table.Column<int>(nullable: false),
                     Price = table.Column<decimal>(type: "decimal(6, 2)", nullable: false),
                     Area = table.Column<decimal>(type: "decimal(6, 2)", nullable: false),
-                    IdCampaign = table.Column<int>(nullable: false),
-                    CampaignIdCampaign = table.Column<int>(nullable: true)
+                    IdCampaign = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Banner", x => x.IdAdvertisement);
                     table.ForeignKey(
-                        name: "FK_Banner_Campaign_CampaignIdCampaign",
-                        column: x => x.CampaignIdCampaign,
+                        name: "FK_Banner_Campaign_IdCampaign",
+                        column: x => x.IdCampaign,
                         principalTable: "Campaign",
                         principalColumn: "IdCampaign",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.InsertData(
-                table: "Banner",
-                columns: new[] { "IdAdvertisement", "Area", "CampaignIdCampaign", "IdCampaign", "Name", "Price" },
-                values: new object[] { 1, 50m, null, 1, 5, 0m });
 
             migrationBuilder.InsertData(
                 table: "Building",
                 columns: new[] { "IdBuilding", "City", "Street", "StreetNumber" },
-                values: new object[,]
-                {
-                    { 1, "Warszawa", "Filtrowa", 1 },
-                    { 2, "Warszawa", "Filtrowa", 2 }
-                });
+                values: new object[] { 1, "Warszawa", "Filtrowa", 1 });
 
             migrationBuilder.InsertData(
-                table: "Campaign",
-                columns: new[] { "IdCampaign", "ClientEmail", "ClientIdClient", "ClientLogin", "EndDate", "FromBuildingIdBuilding", "FromIdBuilding", "IdClient", "PricePerSquareMeter", "StartDate", "ToBuildingIdBuilding", "ToIdBuilding" },
-                values: new object[] { 1, null, null, null, new DateTime(2020, 6, 11, 20, 13, 14, 198, DateTimeKind.Local).AddTicks(4840), null, 1, 1, 50m, new DateTime(2020, 6, 11, 20, 13, 14, 191, DateTimeKind.Local).AddTicks(6410), null, 2 });
+                table: "Building",
+                columns: new[] { "IdBuilding", "City", "Street", "StreetNumber" },
+                values: new object[] { 2, "Warszawa", "Filtrowa", 2 });
 
             migrationBuilder.InsertData(
                 table: "Client",
-                columns: new[] { "IdClient", "Login", "Email", "FirstName", "LastName", "Password", "Phone" },
-                values: new object[] { 1, "klient1_login", "klient1@klient.pl", "Klient1", "Klient2", "klient1_password", "123123123" });
+                columns: new[] { "IdClient", "Email", "FirstName", "LastName", "Login", "Password", "Phone", "RefreshToken" },
+                values: new object[] { 1, "klient1@klient.pl", "Klient1", "Klient2", "klient1_login", "klient1_password", "123123123", null });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Banner_CampaignIdCampaign",
+            migrationBuilder.InsertData(
+                table: "Campaign",
+                columns: new[] { "IdCampaign", "EndDate", "FromIdBuilding", "IdClient", "PricePerSquareMeter", "StartDate", "ToIdBuilding" },
+                values: new object[] { 1, new DateTime(2020, 6, 13, 13, 26, 51, 601, DateTimeKind.Local).AddTicks(252), 1, 1, 50m, new DateTime(2020, 6, 13, 13, 26, 51, 593, DateTimeKind.Local).AddTicks(8025), 2 });
+
+            migrationBuilder.InsertData(
                 table: "Banner",
-                column: "CampaignIdCampaign");
+                columns: new[] { "IdAdvertisement", "Area", "IdCampaign", "Name", "Price" },
+                values: new object[] { 1, 50m, 1, 5, 0m });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Campaign_FromBuildingIdBuilding",
-                table: "Campaign",
-                column: "FromBuildingIdBuilding");
+                name: "IX_Banner_IdCampaign",
+                table: "Banner",
+                column: "IdCampaign");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Campaign_ToBuildingIdBuilding",
+                name: "IX_Campaign_FromIdBuilding",
                 table: "Campaign",
-                column: "ToBuildingIdBuilding");
+                column: "FromIdBuilding");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Campaign_ClientIdClient_ClientLogin_ClientEmail",
+                name: "IX_Campaign_IdClient",
                 table: "Campaign",
-                columns: new[] { "ClientIdClient", "ClientLogin", "ClientEmail" });
+                column: "IdClient");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Campaign_ToIdBuilding",
+                table: "Campaign",
+                column: "ToIdBuilding");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Client_Email",
+                table: "Client",
+                column: "Email",
+                unique: true,
+                filter: "[Email] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Client_Login",
+                table: "Client",
+                column: "Login",
+                unique: true,
+                filter: "[Login] IS NOT NULL");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -1,5 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using APBD_CAMPAIGN.DAL;
+using APBD_CAMPAIGN.DTO.Requests;
+using APBD_CAMPAIGN.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,22 +26,53 @@ namespace APBD_CAMPAIGN.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var campaigns = await _advertCampaignContext.Campaign.ToListAsync();
+            var campaigns = await _advertCampaignContext.Campaign
+                .AsNoTracking()
+                .OrderByDescending(campaign => campaign.StartDate)
+                .Select(campaign => new
+                {
+                    StartDate = campaign.StartDate,
+                    EndDate = campaign.EndDate,
+                    PricePerSquareMeter = campaign.PricePerSquareMeter,
+                    Client = campaign.Client,
+                    Banners = campaign.Banners
+                })
+                .ToListAsync();
 
             return Ok(campaigns);
         }
 
         // GET api/<CampaignController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            return "value";
+            var campaign = await _advertCampaignContext.Campaign.FindAsync(id);
+            return Ok(campaign);
         }
 
         // POST api/<CampaignController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> Post(CreateCampaignRequest createCampaignRequest)
         {
+            Building buildingFrom;
+            Building buildingTo;
+
+            try
+            {
+                buildingFrom = await _advertCampaignContext.Building.FindAsync(createCampaignRequest.FromIdBuilding);
+                buildingTo = await _advertCampaignContext.Building.FindAsync(createCampaignRequest.ToIdBuilding);
+
+                if(!buildingFrom.Street.Equals(buildingTo.Street))
+                {
+                    return BadRequest();
+                }
+            } catch(Exception exception)
+            {
+                Console.WriteLine(exception);
+                return NotFound();
+            }
+
+            return Ok();
         }
 
         // PUT api/<CampaignController>/5

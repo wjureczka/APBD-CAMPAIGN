@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -16,10 +17,19 @@ namespace APBD_CAMPAIGN.Models
         [Column(TypeName = "decimal(6, 2)")]
         public decimal PricePerSquareMeter { get; set; }
 
+        public int IdClient { get; set; }
+        [ForeignKey("IdClient")]
         public Client Client { get; set; }
 
-        public Building FromIdBuilding { get; set; }
+        public int FromIdBuilding { get; set; }
+        [ForeignKey("FromIdBuilding")]
+        public Building FromBuilding { get; set; }
 
-        public Building ToIdBuilding { get; set; }
+        public int ToIdBuilding { get; set; }
+        [ForeignKey("ToIdBuilding")]
+        public Building ToBuilding { get; set; }
+
+        [InverseProperty("Campaign")]
+        public ICollection<Banner> Banners { get; set; }
     }
 }
